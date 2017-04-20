@@ -57,6 +57,25 @@ else
   service_provider = Chef::Provider::Service::Upstart
 end
 
+case node['platform_family']
+when 'debian'
+  case node['platform']
+  when 'ubuntu'
+    case node['platform_version']
+    when /^16/
+      service_provider = Chef::Provider::Service::Systemd
+    when /^14/
+      service_provider = Chef::Provider::Service::Upstart
+    end
+  end
+when 'rhel'
+  case node['platform_version']
+  when /^7/
+    service_provider = Chef::Provider::Service::Systemd
+  else
+    service_provider = Chef::Provider::Service::Upstart
+  end   
+end
 
 # Install the newrelic-infra agent
 package 'newrelic-infra' do
